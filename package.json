@@ -1,45 +1,65 @@
 {
-  "name": "python-brackets",
-	"displayName": "Python Brackets",
-	"description": "A convenient way to nest brackets in python.",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.53.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-        "onCommand:python-brackets.helloWorld"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "python-brackets.helloWorld",
-				"title": "Hello World"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "yarn run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile && yarn run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.53.0",
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^8.0.0",
-		"@types/node": "^12.11.7",
-		"eslint": "^7.9.0",
-		"@typescript-eslint/eslint-plugin": "^4.1.1",
-		"@typescript-eslint/parser": "^4.1.1",
-		"glob": "^7.1.6",
-		"mocha": "^8.1.3",
-		"typescript": "^4.0.2",
-		"vscode-test": "^1.4.0"
-	}
+    "name": "python-brackets",
+    "publisher": "OrangeX4",
+    "displayName": "Python Brackets",
+    "description": "A convenient way to nest brackets in python and javascript.",
+    "version": "1.0.0",
+    "keywords": [
+        "python",
+        "javascript",
+        "brackets",
+        "vscode"
+    ],
+    "engines": {
+        "vscode": "^1.53.0"
+    },
+    "categories": [
+        "Snippets"
+    ],
+    "icon": "images/profile.png",
+    "activationEvents": [
+        "onLanguage:python",
+        "onLanguage:javascript"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "keybindings": [
+            {
+                "command": "python-brackets.nest",
+                "key": "Ctrl+;",
+                "mac": "Ctrl+;",
+                "when": "resourceLangId == python && editorTextFocus || resourceLangId == javascript && editorTextFocus"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "yarn run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "yarn run compile && yarn run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.53.0",
+        "@types/glob": "^7.1.3",
+        "@types/mocha": "^8.0.0",
+        "@types/node": "^12.11.7",
+        "eslint": "^7.9.0",
+        "@typescript-eslint/eslint-plugin": "^4.1.1",
+        "@typescript-eslint/parser": "^4.1.1",
+        "glob": "^7.1.6",
+        "mocha": "^8.1.3",
+        "typescript": "^4.0.2",
+        "vscode-test": "^1.4.0"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/OrangeX4/Python-Brackets"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/OrangeX4/Python-Brackets"
+    },
+    "homepage": "https://orangex4.cool"
 }
