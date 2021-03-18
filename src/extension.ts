@@ -1,5 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+import { stat } from 'node:fs'
 import * as vscode from 'vscode'
 
 // this method is called when your extension is activated
@@ -34,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         while (ch = eat()) {
-            if (state === 'END') {
+            if (state === 'TEXTEND' || state === 'BRACKETEND' || state === 'END') {
                 break
             }
             switch (state) {
@@ -42,25 +43,44 @@ export function activate(context: vscode.ExtensionContext) {
                     if (ch === ':') {
                         funcName = text.substr(curr + 1, pre - curr)
                         pre = curr
+                        state = 'BEGIN'
+                    }
+                    break
+
+                case 'BEGIN':
+                    if (ch === '}') {
+                        bracketsCount++
+                        state = 'DICT'
+                    } else if (ch === ']') {
+                        bracketsCount++
+                        state = 'LIST'
+                    } else if (ch === ')') {
+                        bracketsCount++
+                        state = 'BRACKET'
+                    } else {
                         state = 'TEXT'
                     }
                     break
 
-                case 'TEXT':
-                    if (ch === ')') {
+                case 'LIST':
+                    if (ch === ']') {
                         bracketsCount++
-                    } else if (ch === '(') {
+                    } else if (ch === '[') {
                         bracketsCount--
                     }
-
-                    if (bracketsCount > 0) {
-                        state = 'BRACKET'
-                    } else if (bracketsCount < 0) {
-                        state = 'END'
+                    if (bracketsCount <= 0) {
+                        state = 'BRACKETEND'
                     }
+                    break
 
-                    if (ch === ' ' || ch === '\t' || ch === '') {
-                        state = 'END'
+                case 'DICT':
+                    if (ch === ']') {
+                        bracketsCount++
+                    } else if (ch === '[') {
+                        bracketsCount--
+                    }
+                    if (bracketsCount <= 0) {
+                        state = 'BRACKETEND'
                     }
                     break
 
@@ -76,19 +96,32 @@ export function activate(context: vscode.ExtensionContext) {
                     }
                     break
 
+                case 'TEXT':
+                    if (ch === ')') {
+                        bracketsCount++
+                        state = 'BRACKET'
+                    } else if (ch === ' ' || ch === '\t' || ch === '') {
+                        state = 'TEXTEND'
+                    } else if (ch === '[' || ch === '(' || ch === '{') {
+                        state = 'END'
+                    }
+                    break
+
                 default:
-                    state = 'END'
+                    state = 'TEXTEND'
             }
         }
 
-        if (state === 'END') {
+        if (state === 'TEXTEND') {
             curr += 2
+            nestedText = text.substr(curr, pre - curr)
+        } else if (state === 'END') {
+            curr += 1
             nestedText = text.substr(curr, pre - curr)
         } else {
             nestedText = text.substr(curr, pre - curr)
-
         }
-
+        
         // Replace text
         if (funcName) {
             editor.edit((edit) => {

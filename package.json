@@ -3,7 +3,7 @@
     "publisher": "OrangeX4",
     "displayName": "Python Brackets",
     "description": "A convenient way to nest brackets in python and javascript.",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "keywords": [
         "python",
         "javascript",
@@ -19,7 +19,12 @@
     "icon": "images/profile.png",
     "activationEvents": [
         "onLanguage:python",
-        "onLanguage:javascript"
+        "onLanguage:javascript",
+        "onLanguage:typescript",
+        "onLanguage:java",
+        "onLanguage:c++",
+        "onLanguage:c",
+        "onLanguage:jupyter"
     ],
     "main": "./out/extension.js",
     "contributes": {
