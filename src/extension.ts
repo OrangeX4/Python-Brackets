@@ -1,6 +1,5 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { stat } from 'node:fs'
 import * as vscode from 'vscode'
 
 // this method is called when your extension is activated
@@ -19,6 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
         let pre = curr
         let ch = ''
         let state = 'FUNC'
+        let isOverflow = false
 
         // Value
         let bracketsCount = 0
@@ -30,6 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
                 curr--
                 return text[curr]
             } else {
+                isOverflow = true
                 return ''
             }
         }
@@ -100,23 +101,27 @@ export function activate(context: vscode.ExtensionContext) {
                     if (ch === ')') {
                         bracketsCount++
                         state = 'BRACKET'
-                    } else if (ch === ' ' || ch === '\t' || ch === '') {
+                    } else if (ch === ' ' || ch === '\t' || ch === '' || ch === '(' || ch === '[' || ch === '{') {
                         state = 'TEXTEND'
-                    } else if (ch === '[' || ch === '(' || ch === '{') {
-                        state = 'END'
                     }
                     break
 
                 default:
-                    state = 'TEXTEND'
+                    state = 'END'
             }
         }
 
         if (state === 'TEXTEND') {
-            curr += 2
+            if (isOverflow) {
+                curr += 1
+            } else {
+                curr += 2
+            }
             nestedText = text.substr(curr, pre - curr)
-        } else if (state === 'END') {
-            curr += 1
+        } else if (state === 'BRACKETEND') {
+            if (text[curr] !== '[' && text[curr] !== '{') {
+                curr += 1
+            }
             nestedText = text.substr(curr, pre - curr)
         } else {
             nestedText = text.substr(curr, pre - curr)
