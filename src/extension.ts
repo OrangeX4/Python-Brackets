@@ -58,7 +58,23 @@ export function activate(context: vscode.ExtensionContext) {
                     } else if (ch === ')') {
                         bracketsCount++
                         state = 'BRACKET'
+                    } else if (ch === '\'') {
+                        state = 'SINGLE'
+                    } else if (ch === '"') {
+                        state = 'DOUBLE'
                     } else {
+                        state = 'TEXT'
+                    }
+                    break
+
+                case 'SINGLE':
+                    if (ch === '\'') {
+                        state = 'TEXT'
+                    }
+                    break
+
+                case 'DOUBLE':
+                    if (ch === '"') {
                         state = 'TEXT'
                     }
                     break
@@ -70,7 +86,7 @@ export function activate(context: vscode.ExtensionContext) {
                         bracketsCount--
                     }
                     if (bracketsCount <= 0) {
-                        state = 'BRACKETEND'
+                        state = 'TEXT'
                     }
                     break
 
@@ -101,6 +117,13 @@ export function activate(context: vscode.ExtensionContext) {
                     if (ch === ')') {
                         bracketsCount++
                         state = 'BRACKET'
+                    } else if (ch === ']') {
+                        bracketsCount++
+                        state = 'LIST'
+                    } else if (ch === '\'') {
+                        state = 'SINGLE'
+                    } else if (ch === '"') {
+                        state = 'DOUBLE'
                     } else if (ch === ' ' || ch === '\t' || ch === '' || ch === '(' || ch === '[' || ch === '{') {
                         state = 'TEXTEND'
                     }
