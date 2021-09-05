@@ -6,7 +6,7 @@ import * as vscode from 'vscode'
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-    let disposable = vscode.commands.registerCommand('python-brackets.nest', () => {
+    context.subscriptions.push(vscode.commands.registerCommand('python-brackets.nest', () => {
         const editor = vscode.window.activeTextEditor
         if (!editor) { return }
         const doc = editor.document
@@ -149,7 +149,7 @@ export function activate(context: vscode.ExtensionContext) {
         } else {
             nestedText = text.substr(curr, pre - curr)
         }
-        
+
         // Replace text
         if (funcName) {
             editor.edit((edit) => {
@@ -161,9 +161,123 @@ export function activate(context: vscode.ExtensionContext) {
             })
         }
 
-    })
+    }))
 
-    context.subscriptions.push(disposable)
+    function findBracket() {
+        const closerMap: any = { '(': ')', '[': ']', '{': '}', '<': '>', ')': '(', ']': '[', '}': '{', '>': '<' }
+        const directionMap: any = { '(': 1, '[': 1, '{': 1, '<': 1, ')': -1, ']': -1, '}': -1, '>': -1 }
+
+        const editor = vscode.window.activeTextEditor
+        if (!editor) { return }
+        const doc = editor.document
+        const pos = editor.selection.start
+        const text = doc.lineAt(pos.line).text
+
+        // State machine, get the funcName and nestedText
+        let length = text.length
+        let curr = pos.character
+        let start = curr
+        let end = null
+        let ch = ''
+        let count = 1
+
+        // 起始符
+        const opener = text[curr - 1]
+        if (!(opener in closerMap)) {
+            return
+        }
+
+        // 闭合符与自增方向
+        const closer = closerMap[opener]
+        const direction = directionMap[opener]
+        curr--
+
+        function eat() {
+            if (curr >= 0 && curr <= length) {
+                curr += direction
+                return text[curr]
+            } else {
+                // isOverflow = true
+                return ''
+            }
+        }
+
+        let isEnd = false
+        while (ch = eat()) {
+            if (isEnd) {
+                break
+            }
+            switch (ch) {
+                // 闭合符
+                case closer:
+                    count--
+                    if (count === 0) {
+                        end = curr
+                        isEnd = true
+                    }
+                    break
+                // 开启符
+                case opener:
+                    count++
+                    break
+                default:
+            }
+        }
+
+        return { pos, text, opener, closer, direction, start, end }
+    }
+
+    function buildRange(line: number, start: number, end: number) {
+        return new vscode.Range(new vscode.Position(line, start), new vscode.Position(line, end))
+    }
+
+    function buildSelection(line: number, start: number, end: number) {
+        return new vscode.Selection(new vscode.Position(line, start), new vscode.Position(line, end))
+    }
+
+    context.subscriptions.push(vscode.commands.registerCommand('python-brackets.remove', () => {
+
+        const editor = vscode.window.activeTextEditor
+        if (!editor) { return }
+
+        const result = findBracket()
+        if (!result) {
+            return
+        }
+        const { pos, text, start, end, direction } = result
+
+        if (end !== null) {
+            editor.edit((edit) => {
+                if (direction === 1) {
+                    edit.replace(buildRange(pos.line, start - 1, end + 1), text.substr(start, end - start))
+                } else if (direction === -1) {
+                    edit.replace(buildRange(pos.line, start, end), text.substr(end + 1, start - end - 2))
+                }
+            })
+        }
+    }))
+
+    context.subscriptions.push(vscode.commands.registerCommand('python-brackets.selectLeft', () => {
+
+        const editor = vscode.window.activeTextEditor
+        if (!editor) { return }
+
+        const result = findBracket()
+        if (!result) {
+            return
+        }
+        const { pos, text, start, end, direction } = result
+
+        if (end !== null) {
+            editor.edit((edit) => {
+                if (direction === 1) {
+                    editor.selection = buildSelection(pos.line, start - 1, end + 1)
+                } else if (direction === -1) {
+                    editor.selection = buildSelection(pos.line, start, end)
+                }
+            })
+        }
+    }))
 }
 
 // this method is called when your extension is deactivated
