@@ -4,16 +4,16 @@
 
 Shortcut: `Ctrl + ;`
 
-![](https://ae01.alicdn.com/kf/U7de1475ee59648e5b3d95d3943357706M.jpg)
+![](https://gitee.com/orangex4/picgo/raw/master/images/python-brackets-nest.gif)
 
 ## Remove Brackets
 
 Shortcut: `Ctrl + Shift + Alt + Backspace`
 
-![](https://i0.hdslb.com/bfs/album/faea4d61f231a5f253e336c70861cfd9aa5ff547.gif)
+![](https://gitee.com/orangex4/picgo/raw/master/images/python-brackets-remove.gif)
 
 ## Select Brackets
 
 Shortcut: `Ctrl + Shift + Alt + /`
 
-![](https://i0.hdslb.com/bfs/album/b983ca3fe585c41d62a7f11b265253826a6ab368.gif)
+![](https://gitee.com/orangex4/picgo/raw/master/images/python-brackets-select.gif)
