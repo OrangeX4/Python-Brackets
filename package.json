@@ -3,7 +3,7 @@
     "publisher": "OrangeX4",
     "displayName": "Python Brackets",
     "description": "Some convenient shortcuts to operate brackets in vscode.",
-    "version": "1.4.1",
+    "version": "1.4.2",
     "keywords": [
         "python",
         "javascript",

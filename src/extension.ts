@@ -249,9 +249,11 @@ export function activate(context: vscode.ExtensionContext) {
     if (end !== null) {
       editor.edit((edit) => {
         if (direction === 1) {
-          edit.replace(buildRange(pos.line, start - 1, end + 1), text.substr(start, end - start))
+          edit.replace(buildRange(pos.line, start - 1, end + 1), text.slice(start, end))
+          editor.selection = buildSelection(pos.line, start - 1, end + 1)
         } else if (direction === -1) {
-          edit.replace(buildRange(pos.line, start, end), text.substr(end + 1, start - end - 2))
+          edit.replace(buildRange(pos.line, start, end), text.slice(end + 1, start - 1))
+          editor.selection = buildSelection(pos.line, start, end)
         }
       })
     }
@@ -271,7 +273,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (end !== null) {
       editor.edit((edit) => {
         if (direction === 1) {
-          editor.selection = buildSelection(pos.line, start - 1, end + 1)
+          editor.selection = buildSelection(pos.line, start, end)
         } else if (direction === -1) {
           editor.selection = buildSelection(pos.line, start, end)
         }
